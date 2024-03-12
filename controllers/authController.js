@@ -21,9 +21,9 @@ const createUser = async (req = request, res = response) => {
           adress: newUser.adress,
           phoneNumber: newUser.phoneNumber,
           email: newUser.email,
-          rol: 'cliente',
+          rol: "cliente",
           token,
-        }); 
+        });
       }
     })
     .catch((error) => {
@@ -36,11 +36,7 @@ const createUser = async (req = request, res = response) => {
 
 const UpdateUser = async (req = request, res = response) => {
   try {
-    const attributesToUpdate = [
-      "phoneNumber",
-      "adress",
-      "password",
-    ];
+    const attributesToUpdate = ["phoneNumber", "adress", "password"];
     const attributesToSearch = [
       "id",
       "name",
@@ -50,9 +46,9 @@ const UpdateUser = async (req = request, res = response) => {
       "image",
       "password",
     ];
-    console.log('puto');
+    console.log("puto");
     console.log(req.body);
-    if (req.file) { 
+    if (req.file) {
       const image = req.file.filename;
       req.body = { ...req.body, image };
       attributesToUpdate.push("image");
@@ -64,29 +60,27 @@ const UpdateUser = async (req = request, res = response) => {
       "User",
       req.body.rol,
       "id",
-      attributesToSearch 
+      attributesToSearch
     ).then(async (user) => {
-      if(user){
+      if (user) {
         console.log(user);
         if (user.image !== null) {
           const urlFileDelete = `${rutaImage}/${user.image}`;
           console.log(urlFileDelete);
           ModelController.deleteFile(urlFileDelete);
         }
-        console.log('me cago');
         attributesToUpdate.forEach((element) => {
           user[element] = req.body[element];
         });
-        console.log('me cago')
         await user.save();
-        console.log('Guardado')
+        console.log("Guardado");
         return res.status(200).json({
           ok: true,
           msg: `El ${req.body.rol}  ha sido editado.`,
         });
       }
     });
-  } catch (error) { 
+  } catch (error) {
     return res.status(400).json({
       ok: false,
       msg: `Debes comunicarte con el administrador.`,
@@ -119,7 +113,7 @@ const loginUser = async (req, res = response) => {
     const token = await generateJWT(dbUser.id, dbUser.name);
 
     const rolUser = await dbUser.getRole();
-    const getNameRole = rolUser.id == 4 ? 'cliente' : rolUser.name
+    const getNameRole = rolUser.id == 4 ? "cliente" : rolUser.name;
     //Respuesta del servicio
     return res.json({
       ok: true,
@@ -130,7 +124,7 @@ const loginUser = async (req, res = response) => {
       phoneNumber: dbUser.phoneNumber,
       image: dbUser.image,
       email: dbUser.email,
-      rol: getNameRole ,
+      rol: getNameRole,
       token,
     });
   } catch (error) {
@@ -151,13 +145,13 @@ const revalidateToken = async (req, res = response) => {
   //Generar el JWT
   const token = await generateJWT(uid, dbUser.name);
   const rolUser = await dbUser.getRole();
-  const getNameRole = rolUser.id == 4 ? 'cliente' : rolUser.name
+  const getNameRole = rolUser.id == 4 ? "cliente" : rolUser.name;
   res.json({
     ok: true,
     name: dbUser.name,
     surname: dbUser.surname,
     adress: dbUser.adress,
-    phoneNumber: dbUser.phoneNumber, 
+    phoneNumber: dbUser.phoneNumber,
     image: dbUser.image,
     email: dbUser.email,
     rol: getNameRole,
